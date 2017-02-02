@@ -81,8 +81,8 @@ IDENTIFIER  {ALPHA}+(_*({ALPHA}|{DIGIT})+)*
 "<="            { cout << "LTE\n";              column += yyleng; }
 ">="            { cout << "GTE\n";              column += yyleng; }
 
-{IDENTIFIER}    { cout << "IDENT %s\n", yytext);    column += yyleng; }
-{DIGIT}+        { cout << "NUMBER %s\n", yytext);   column += yyleng; }
+{IDENTIFIER}    { cout << "IDENT " << yytext << endl;    column += yyleng; }
+{DIGIT}+        { cout << "NUMBER " << yytext << endl;   column += yyleng; }
 
 ";"             { cout << "SEMICOLON\n";        column += yyleng; }
 ":"             { cout << "COLON\n";            column += yyleng; }
