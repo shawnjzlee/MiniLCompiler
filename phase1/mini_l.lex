@@ -33,6 +33,8 @@
 %{
     #include <iostream>
     int line = 1, column = 1;
+    using namespace std;
+    extern "C" int yylex();
 %}
 
 ALPHA       [a-zA-Z]
