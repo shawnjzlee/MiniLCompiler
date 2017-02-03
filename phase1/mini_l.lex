@@ -34,7 +34,7 @@
     #include <iostream>
     int line = 1, column = 1;
     using namespace std;
-    extern "C" int yylex();
+    // extern "C" int yylex();
 %}
 
 ALPHA       [a-zA-Z]
@@ -100,4 +100,20 @@ IDENTIFIER  {ALPHA}+(_*({ALPHA}|{DIGIT})+)*
 "##".*          { column = 1; }
 "\n"            { line++;   column = 1; }
 
+.               { cout << "Error at line " << line << ", column " << column 
+                       << ": unrecognized symbol " << "\"" << yytext << "\"\n";
+                  exit(0); }
+
 %%
+
+int main (int argc, char * argv[]) {
+    if (argc >= 2) {
+        yyin = fopen(argv[1], "r");
+        if (yyin == NULL)
+            yyin = stdin;
+    }
+    else
+        yyin = stdin;
+        
+    yylex();
+}
