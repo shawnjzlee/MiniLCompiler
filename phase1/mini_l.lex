@@ -69,6 +69,7 @@ IDENTIFIER  {ALPHA}+(_*({ALPHA}|{DIGIT})+)*
 "not"           { cout << "NOT\n";              column += yyleng; }
 "true"          { cout << "TRUE\n";             column += yyleng; }
 "false"         { cout << "FALSE\n";            column += yyleng; }
+"return"        { cout << "RETURN\n";           column += yyleng; }
 
 "-"             { cout << "SUB\n";              column += yyleng; }
 "+"             { cout << "ADD\n";              column += yyleng; }
