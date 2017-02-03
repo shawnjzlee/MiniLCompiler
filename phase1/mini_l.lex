@@ -31,14 +31,7 @@
  */
 
 %{
-    #include <iostream>
-    #include <sstream>
-    using namespace std;
-    
     int line = 1, column = 1;
-    // http://stackoverflow.com/questions/39052715/undefined-reference-to-yylex-undefined-reference-to-yyin
-    istream * yyin;
-    extern int yylex();
 %}
 
 ALPHA       [a-zA-Z]
@@ -47,66 +40,65 @@ IDENTIFIER  {ALPHA}+(_*({ALPHA}|{DIGIT})+)*
 
 %%
 
-"function"      { cout << "FUNCTION\n";         column += yyleng; }
-"beginparams"   { cout << "BEGIN_PARAMS\n";     column += yyleng; }
-"endparams"     { cout << "END_PARAMS\n";       column += yyleng; }
-"beginlocals"   { cout << "BEGIN_LOCALS\n";     column += yyleng; }
-"endlocals"     { cout << "END_LOCALS\n";       column += yyleng; }
-"beginbody"     { cout << "BEGIN_BODY\n";       column += yyleng; }
-"endbody"       { cout << "END_BODY\n";         column += yyleng; }
-"integer"       { cout << "INTEGER\n";          column += yyleng; }
-"array"         { cout << "ARRAY\n";            column += yyleng; }
-"of"            { cout << "OF\n";               column += yyleng; }
-"if"            { cout << "IF\n";               column += yyleng; }
-"then"          { cout << "THEN\n";             column += yyleng; }
-"endif"         { cout << "ENDIF\n";            column += yyleng; }
-"else"          { cout << "ELSE\n";             column += yyleng; }
-"while"         { cout << "WHILE\n";            column += yyleng; }
-"do"            { cout << "DO\n";               column += yyleng; }
-"beginloop"     { cout << "BEGINLOOP\n";        column += yyleng; }
-"endloop"       { cout << "ENDLOOP\n";          column += yyleng; }
-"continue"      { cout << "CONTINUE\n";         column += yyleng; }
-"read"          { cout << "READ\n";             column += yyleng; }
-"write"         { cout << "WRITE\n";            column += yyleng; }
-"and"           { cout << "AND\n";              column += yyleng; }
-"or"            { cout << "OR\n";               column += yyleng; }
-"not"           { cout << "NOT\n";              column += yyleng; }
-"true"          { cout << "TRUE\n";             column += yyleng; }
-"false"         { cout << "FALSE\n";            column += yyleng; }
-"return"        { cout << "RETURN\n";           column += yyleng; }
+"function"      { printf("FUNCTION\n");         column += yyleng; }
+"beginparams"   { printf("BEGIN_PARAMS\n");     column += yyleng; }
+"endparams"     { printf("END_PARAMS\n");       column += yyleng; }
+"beginlocals"   { printf("BEGIN_LOCALS\n");     column += yyleng; }
+"endlocals"     { printf("END_LOCALS\n");       column += yyleng; }
+"beginbody"     { printf("BEGIN_BODY\n");       column += yyleng; }
+"endbody"       { printf("END_BODY\n");         column += yyleng; }
+"integer"       { printf("INTEGER\n");          column += yyleng; }
+"array"         { printf("ARRAY\n");            column += yyleng; }
+"of"            { printf("OF\n");               column += yyleng; }
+"if"            { printf("IF\n");               column += yyleng; }
+"then"          { printf("THEN\n");             column += yyleng; }
+"endif"         { printf("ENDIF\n");            column += yyleng; }
+"else"          { printf("ELSE\n");             column += yyleng; }
+"while"         { printf("WHILE\n");            column += yyleng; }
+"do"            { printf("DO\n");               column += yyleng; }
+"beginloop"     { printf("BEGINLOOP\n");        column += yyleng; }
+"endloop"       { printf("ENDLOOP\n");          column += yyleng; }
+"continue"      { printf("CONTINUE\n");         column += yyleng; }
+"read"          { printf("READ\n");             column += yyleng; }
+"write"         { printf("WRITE\n");            column += yyleng; }
+"and"           { printf("AND\n");              column += yyleng; }
+"or"            { printf("OR\n");               column += yyleng; }
+"not"           { printf("NOT\n");              column += yyleng; }
+"true"          { printf("TRUE\n");             column += yyleng; }
+"false"         { printf("FALSE\n");            column += yyleng; }
+"return"        { printf("RETURN\n");           column += yyleng; }
 
-"-"             { cout << "SUB\n";              column += yyleng; }
-"+"             { cout << "ADD\n";              column += yyleng; }
-"*"             { cout << "MULT\n";             column += yyleng; }
-"/"             { cout << "DIV\n";              column += yyleng; }
-"%"             { cout << "MOD\n";              column += yyleng; }
+"-"             { printf("SUB\n");              column += yyleng; }
+"+"             { printf("ADD\n");              column += yyleng; }
+"*"             { printf("MULT\n");             column += yyleng; }
+"/"             { printf("DIV\n");              column += yyleng; }
+"%"             { printf("MOD\n");              column += yyleng; }
 
-"=="            { cout << "EQ\n";               column += yyleng; }
-"<>"            { cout << "NEQ\n";              column += yyleng; }
-"<"             { cout << "LT\n";               column += yyleng; }
-">"             { cout << "GT\n";               column += yyleng; }
-"<="            { cout << "LTE\n";              column += yyleng; }
-">="            { cout << "GTE\n";              column += yyleng; }
+"=="            { printf("EQ\n");               column += yyleng; }
+"<>"            { printf("NEQ\n");              column += yyleng; }
+"<"             { printf("LT\n");               column += yyleng; }
+">"             { printf("GT\n");               column += yyleng; }
+"<="            { printf("LTE\n");              column += yyleng; }
+">="            { printf("GTE\n");              column += yyleng; }
 
-{IDENTIFIER}    { cout << "IDENT " << yytext << endl;    column += yyleng; }
-{DIGIT}+        { cout << "NUMBER " << yytext << endl;   column += yyleng; }
+{IDENTIFIER}    { printf("IDENT %s\n", yytext);    column += yyleng; }
+{DIGIT}+        { printf("NUMBER %s\n", yytext);   column += yyleng; }
 
-";"             { cout << "SEMICOLON\n";        column += yyleng; }
-":"             { cout << "COLON\n";            column += yyleng; }
-","             { cout << "COMMA\n";            column += yyleng; }
-"("             { cout << "L_PAREN\n";          column += yyleng; }
-")"             { cout << "R_PAREN\n";          column += yyleng; }
-"["             { cout << "L_SQUARE_BRACKET\n"; column += yyleng; }
-"]"             { cout << "R_SQUARE_BRACKET\n"; column += yyleng; }
-":="            { cout << "ASSIGN\n";           column += yyleng; }
+");"            { printf("SEMICOLON\n");        column += yyleng; }
+":"             { printf("COLON\n");            column += yyleng; }
+","             { printf("COMMA\n");            column += yyleng; }
+"("             { printf("L_PAREN\n");          column += yyleng; }
+")"             { printf("R_PAREN\n");          column += yyleng; }
+"["             { printf("L_SQUARE_BRACKET\n"); column += yyleng; }
+"]"             { printf("R_SQUARE_BRACKET\n"); column += yyleng; }
+":="            { printf("ASSIGN\n");           column += yyleng; }
 
 [ \t]+          { column += yyleng; }
 "##".*          { column = 1; }
 "\n"            { line++;   column = 1; }
 
-.               { cout << "Error at line " << line << ", column " << column 
-                       << ": unrecognized symbol " << "\"" << yytext << "\"\n";
-                  exit(0); }
+.               { printf("Error at line %d, column %d: unrecognized symbol \"%s\"\n",
+                           line, column, yytext); exit(0); }
 
 %%
 
