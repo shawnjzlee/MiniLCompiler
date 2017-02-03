@@ -32,9 +32,13 @@
 
 %{
     #include <iostream>
-    int line = 1, column = 1;
+    #include <sstream>
     using namespace std;
-    // extern "C" int yylex();
+    
+    int line = 1, column = 1;
+    // http://stackoverflow.com/questions/39052715/undefined-reference-to-yylex-undefined-reference-to-yyin
+    istream * yyin;
+    extern int yylex();
 %}
 
 ALPHA       [a-zA-Z]
