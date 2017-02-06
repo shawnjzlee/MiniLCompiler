@@ -80,7 +80,7 @@ DIGIT       [0-9]
 "<="            { printf("LTE\n");              column += yyleng; }
 ">="            { printf("GTE\n");              column += yyleng; }
 
-";"            { printf("SEMICOLON\n");        column += yyleng; }
+";"             { printf("SEMICOLON\n");        column += yyleng; }
 ":"             { printf("COLON\n");            column += yyleng; }
 ","             { printf("COMMA\n");            column += yyleng; }
 "("             { printf("L_PAREN\n");          column += yyleng; }
@@ -91,15 +91,15 @@ DIGIT       [0-9]
 
 [ \t]+          { column += yyleng; }
 "##".*          { column = 1; }
-\n            { line++;   column = 1; }
+\n              { line++;   column = 1; }
 
-[0-9]+        { printf("NUMBER %s\n", yytext);   column += yyleng; }
-(([0-9]|\_)([[:alnum:]]|\_)*)|(([[:alnum:]]|\_)*\_)     {printf("Error: invalid identifier at line %d, column %d, yytext: %s\n",
-                line, column, yytext); column+=yyleng; exit(0);}
-[[:alpha:]]([[:alnum:]]|\_)*    { printf("IDENT %s\n", yytext);    column += yyleng;  }
+{DIGIT}+        { printf("NUMBER %s\n", yytext);   column += yyleng; }
 
-.               { printf(" Error at line %d, column %d: unrecognized symbol \"%s\"\n",
-                           line, column, yytext); exit(0); }
+{ALPHA}+(_*({ALPHA}|{DIGIT})+)* { printf("IDENT %s\n", yytext); column += yyleng; }
+
+(([0-9]|\_)([[:alnum:]]|\_)*)|(([[:alnum:]]|\_)*\_) {printf("Error: invalid identifier at line %d, column %d, yytext: %s\n", line, column, yytext); column+=yyleng; exit(0);}
+
+.               { printf(" Error at line %d, column %d: unrecognized symbol \"%s\"\n", line, column, yytext); exit(0); }
 
 %%
 
