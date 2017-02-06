@@ -33,10 +33,8 @@
 %{
     int line = 1, column = 1;
 %}
-
 ALPHA       [a-zA-Z]
 DIGIT       [0-9]
-
 %%
 
 "function"      { printf("FUNCTION\n");         column += yyleng; }
@@ -80,7 +78,7 @@ DIGIT       [0-9]
 "<="            { printf("LTE\n");              column += yyleng; }
 ">="            { printf("GTE\n");              column += yyleng; }
 
-";"             { printf("SEMICOLON\n");        column += yyleng; }
+";"            { printf("SEMICOLON\n");        column += yyleng; }
 ":"             { printf("COLON\n");            column += yyleng; }
 ","             { printf("COMMA\n");            column += yyleng; }
 "("             { printf("L_PAREN\n");          column += yyleng; }
@@ -89,17 +87,17 @@ DIGIT       [0-9]
 "]"             { printf("R_SQUARE_BRACKET\n"); column += yyleng; }
 ":="            { printf("ASSIGN\n");           column += yyleng; }
 
-[ \t]+          { column += yyleng; }
-"##".*          { column = 1; }
-\n              { line++;   column = 1; }
+[ \t\r]+          { column += yyleng; }
+"##".*          {column = 1;}
+\n            { line++;   column = 1; }
 
-{DIGIT}+        { printf("NUMBER %s\n", yytext);   column += yyleng; }
 
-{ALPHA}+(_*({ALPHA}|{DIGIT})+)* { printf("IDENT %s\n", yytext); column += yyleng; }
-
+[0-9]+        { printf("NUMBER %s\n", yytext);   column += yyleng; }
 (([0-9]|\_)([[:alnum:]]|\_)*)|(([[:alnum:]]|\_)*\_) {printf("Error: invalid identifier at line %d, column %d, yytext: %s\n", line, column, yytext); column+=yyleng; exit(0);}
+[[:alpha:]]([[:alnum:]]|\_)*    { printf("IDENT %s\n", yytext);    column += yyleng;  }
 
-.               { printf(" Error at line %d, column %d: unrecognized symbol \"%s\"\n", line, column, yytext); exit(0); }
+.               { printf(" Error at line %d, column %d: unrecognized symbol \"%s\"\n", line, column, yytext); } 
+
 
 %%
 
