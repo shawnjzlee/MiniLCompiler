@@ -104,7 +104,7 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 51 "mini_l.y" /* yacc.c:1909  */
+#line 50 "mini_l.y" /* yacc.c:1909  */
 
   char* identToken;
   int numberToken;

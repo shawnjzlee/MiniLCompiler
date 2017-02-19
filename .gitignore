@@ -33,5 +33,7 @@
 *.out
 *.app
 
-# Test output files
+# Test output files and directory
 *.test
+.c9/
+bin/

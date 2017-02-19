@@ -26,5 +26,11 @@ move:
 	mv $(C_SRC) $(BUILD_DIR)/
 	cp y.tab.h $(BUILD_DIR)/
 
+check:
+	(cat fibonacci.min | $(BUILD_DIR)/$(EXECUTABLE)) > fibonacci.test
+	diff fibonacci.test fibonacci.parse
+	
+
 clean:
 	rm -rf $(BUILD_DIR)
+	rm fibonacci.test
