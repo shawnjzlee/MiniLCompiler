@@ -32,7 +32,7 @@
 
 %{
     #include "y.tab.h"
-    #include <string>
+    #include <string.h>
     int line = 1, column = 1;
 %}
 
