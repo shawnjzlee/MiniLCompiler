@@ -41,6 +41,7 @@ DIGIT       [0-9]
 
 %%
 
+"program"       { column += yyleng; return PROGRAM; }
 "function"      { column += yyleng; return FUNCTION; }
 "beginparams"   { column += yyleng; return BEGIN_PARAMS; }
 "endparams"     { column += yyleng; return END_PARAMS; }
@@ -99,6 +100,12 @@ DIGIT       [0-9]
 
 {ALPHA}+(_*({ALPHA}|{DIGIT})+)* { column += yyleng; return IDENT; }
 
-(([0-9]|\_)([[:alnum:]]|\_)*)|(([[:alnum:]]|\_)*\_) {printf("Error: invalid identifier at line %d, column %d, yytext: %s\n", line, column, yytext); column+=yyleng; exit(0);}
+(([0-9]|\_)([[:alnum:]]|\_)*)|(([[:alnum:]]|\_)*\_) { printf("Error at line %d, column %d, yytext: %s: invalid identifier.\n", line, column, yytext); exit(0); }
+
+{DIGIT}+{ALPHA}+ { printf("Error at line %d, column %d, yytext: %s: identifier must start with a letter.\n", line, column, yytext); exit(0); }
+
+"_"({DIGIT}|{ALPHA})+ { printf("Error at line %d, colum %d, yytext: %s: identifier must start with a letter.\n", line, column, yytext); exit(0); }
 
 .               { printf(" Error at line %d, column %d: unrecognized symbol \"%s\"\n", line, column, yytext); exit(0); }
+
+%%
