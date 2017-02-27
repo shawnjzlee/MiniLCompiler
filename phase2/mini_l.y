@@ -56,8 +56,8 @@
 }
 
 %error-verbose
-%start function
-%token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY INTEGER ARRAY OF IF THEN ENDIF
+%start program
+%token FUNCTION BEGIN_PARAMS END_PARAMS BEGIN_LOCALS END_LOCALS BEGIN_BODY END_BODY INTEGER ARRAY OF IF THEN ENDIF END_OF_PROGRAM
 %token ELSE ELSEIF WHILE DO BEGINLOOP ENDLOOP CONTINUE READ WRITE RETURN
 %token NOT TRUE FALSE SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN
 %token <identToken> IDENT 
@@ -66,6 +66,12 @@
 %nonassoc IF_PREC ELSE_PREC
 
 %% 
+program:    functions {printf("program -> functions END_OF_PROGRAM\n");}
+            ;
+functions:  function {printf("functions -> function\n");}
+            | function functions {printf("functions -> function functions\n")};
+            ;
+
 function:
 			|
 			function identifier semicolon params locals block endbody {printf( "function -> function ident semicolon params locals block endbody\n"); } 
@@ -105,7 +111,7 @@ statement:
 			| read Vars {printf("statement -> read Vars\n"); }
 			| write Vars {printf("statement -> write Vars\n");}
 			| continue {printf("statement -> continue\n");}
-            | return {printf("statement -> return\n"); }
+            | return expression {printf("statement -> return\n"); }
 			;			
 Vars:
 			Var comma Vars {printf("Vars -> Var comma Vars\n"); }
@@ -297,9 +303,9 @@ comp:
 			| GTE {printf("comp -> GTE\n"); }
 			;
 return:
-            RETURN number {printf("return -> RETURN(NUMBER)\n"); }
-            | RETURN function {printf("return -> RETURN(function)\n"); }
-			//| RETURN { printf("return -> RETURN(NULL)\n"); }
+            //RETURN number {printf("return -> RETURN(NUMBER)\n"); }
+            //| RETURN function {printf("return -> RETURN(function)\n"); }
+			 RETURN { printf("return -> RETURN(NULL)\n"); }
 			;
 
 %%
