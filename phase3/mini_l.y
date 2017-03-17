@@ -205,9 +205,7 @@ declarations:
 	        ;		
 
 declaration:
-			identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
-				//printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n"); 
-			
+			IDENT identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
 				if ($1 == fn_name || $1 == [=]() { for(auto &i : symbol_table) { if($1 == name) return true; }}) {
 					error << "Error line " << currLine << ": used variable \"" + $1 + "\" is already defined\n";
 				}
@@ -216,9 +214,7 @@ declaration:
 					symbol_table.push_back(temp);
 				}
 			}
-			| identifiers COLON INTEGER {
-				// printf("declaration -> identifiers COLON INTEGER\n"); 
-				
+			| IDENT identifiers COLON INTEGER {
 				if ($1 == fn_name || $1 == [=]() { for(auto &i : symbol_table) { if($1 == name) return true; }}) {
 					error << "Error line " << currLine << ": used variable \"" + $1 + "\" is already defined\n";
 				}
@@ -229,8 +225,16 @@ declaration:
 			}
 
 identifiers:
-			IDENT COMMA identifiers {printf("identifiers -> IDENT COMMA identifiers\n"); }
-			|  IDENT { printf("identifiers -> IDENT\n"); }
+			COMMA IDENT identifiers {
+				if ($2 == fn_name || $2 == [=]() { for(auto &i : symbol_table) { if($2 == name) return true; }}) {
+					error << "Error line " << currLine << ": used variable \"" + $2 + "\" is already defined\n";
+				}
+				else {
+					symbol temp(0, 0, $2);
+					symbol_table.push_back(temp);
+				}
+			}
+			| { }
 			;
 			
 statements:
