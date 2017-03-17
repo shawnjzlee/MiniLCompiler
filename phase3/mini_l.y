@@ -82,12 +82,16 @@
  	string loop_label;
  	bool read;
  	bool write;
+ 	bool add;
+ 	bool sub;
  	
  	status() {
  		label_sz = 0;
  		loop_label = "";
  		read = false;
  		write = false;
+ 		add = false;
+ 		sub = false;
  	}
  };
  
@@ -101,7 +105,7 @@
  vector<string> label;
  vector<string> ending_label;
  vector<string> loop;
- vector<string> 
+ vector<string> expressions;
  
  // variables
  extern int currLine;
@@ -432,11 +436,17 @@ terms:
 			;
 exprlist:
 			ADD multiplicative_exp exprlist  { 
-				if ($3 != NULL) 
+				if ($3 != NULL) expressions.push_back($3);
+				add = true;
+				$$ = $2
 			}
 
-			| SUB multiplicative_exp exprlist { }
-			| { }
+			| SUB multiplicative_exp exprlist { 
+				if ($3 != NULL) expressions.push_back($3);
+				sub = true;
+				$$ = $2;
+			}
+			| { $$ = ""; }
 			;
 comp:
 			EQ {  }
