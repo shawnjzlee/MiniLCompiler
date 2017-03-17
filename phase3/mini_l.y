@@ -428,10 +428,15 @@ multiplicative_exp:
 			term terms { }
 			;
 term:
-			var { }
-			| NUMBER { }
-			| L_PAREN expression R_PAREN { }
-			| SUB var { }
+			var { $$ = $1; }
+			| NUMBER { $$ = $1; }
+			| L_PAREN expression R_PAREN { $$ = $2; }
+			| SUB var { 
+				string temp = $2;
+				temp.insert(0, "_");
+				code << "* " << temp << ", " << temp << ", - 1" << endl;
+				$$ = $2;
+			}
 			| SUB NUMBER { }
 			| SUB L_PAREN expression R_PAREN { } 
 terms:
