@@ -53,11 +53,14 @@
  #include <stack>
  #include <list>
  #include <string>
+ #include <algorithm>
  
  using namespace std;
  
  // functions
  void yyerror(const char *msg);
+ bool is_duplicate(const string var);
+ int get_index_by_name(const string var);
  
  extern int yylex(void);
  
@@ -199,8 +202,8 @@ declarations:
 
 declaration:
 			IDENT identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
-				if ($1 == fn_name || $1 == [=]() { for(auto &i : symbol_table) { if($1 == name) return true; }}) {
-					error << "Error line " << currLine << ": used variable \"" + $1 + "\" is already defined\n";
+				if (is_duplicate($1)) {
+					error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
 				}
 				else {
 					symbol temp(1, atoi($6), $1);
@@ -208,8 +211,8 @@ declaration:
 				}
 			}
 			| IDENT identifiers COLON INTEGER {
-				if ($1 == fn_name || $1 == [=]() { for(auto &i : symbol_table) { if($1 == name) return true; }}) {
-					error << "Error line " << currLine << ": used variable \"" + $1 + "\" is already defined\n";
+				if (is_duplicate($1)) {
+					error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
 				}
 				else {
 					symbol temp(0, 0, $1);
@@ -219,8 +222,8 @@ declaration:
 
 identifiers:
 			COMMA IDENT identifiers {
-				if ($2 == fn_name || $2 == [=]() { for(auto &i : symbol_table) { if($2 == name) return true; }}) {
-					error << "Error line " << currLine << ": used variable \"" + $2 + "\" is already defined\n";
+				if (is_duplicate($2)) {
+					error << "Error line " << currLine << ": used array / variable \"" + $2 + "\" is already defined\n";
 				}
 				else {
 					symbol temp(0, 0, $2);
@@ -314,10 +317,9 @@ statement:	var ASSIGN expression {
 			;
 			
 vars:		var COMMA vars {
-				vector<symbol>::iterator it;
+				index = get_index_by_name($1);
 				symbol current_sym;
-				it = find(symbol_table.begin(), symbol_table.end(), $1);
-				if (it != symbol_table.end()) current_sym = *it;
+				if (index != -1) current_sym = symbol_table.at(index); 
 				
 				if (global.read) {
 					if (current_sym.type == 0) code << ".<" << current_sym.name << endl;
@@ -341,10 +343,9 @@ vars:		var COMMA vars {
 				}
 			}
 			| var {
-				vector<symbol>::iterator it;
+				index = get_index_by_name($1);
 				symbol current_sym;
-				it = find(symbol_table.begin(), symbol_table.end(), $1);
-				if (it != symbol_table.end()) current_sym = *it;
+				if (index != -1) current_sym = symbol_table.at(index); 
 				
 				if (global.read) {
 					if (current_sym.type == 0) code << ".<" << current_sym.name << endl;
@@ -397,8 +398,17 @@ relation_exp:
 			| L_PAREN bool_exp R_PAREN  { }
 			;
 var:
-			IDENT {  }
-			| IDENT L_PAREN expression R_PAREN {  }
+			IDENT { 
+				if(is_duplicate($1)) $$ = $1;
+				else error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
+			}
+			| IDENT L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
+				if(is_duplicate($1) && symbol_table.at(get_index_by_name($1)).type != 1)) {
+					string temp = $1 + " " + $3;
+					strcpy($$, temp.c_str());
+				}
+				else error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
+			}
 			;
 expression:
 			multiplicative_exp exprlist {  }
@@ -435,6 +445,19 @@ comp:
 			;
 
 %%
+
+bool is_duplicate(const string var) {
+    if (var == fn_name) return true;
+    if (get_index_by_name(var) != -1) return true;
+    return false;
+}
+
+int get_index_by_name(const string var) {
+    auto it = find_if(symbol_table.begin(), symbol_table.end(), 
+        [&](symbol const& i) { return i.name == var; });
+    if (it != symbol_table.end()) return it - symbol_table.begin();
+    else return -1;
+}
 
 int main(int argc, char **argv){
 	
