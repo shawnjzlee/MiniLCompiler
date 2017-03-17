@@ -221,8 +221,8 @@ identifiers:
 			| { }
 			;
 
-statements:	statement SEMICOLON statements {printf("statements -> statement SEMICOLON statements\n"); }
-			| statement SEMICOLON {printf("statements -> statement SEMICOLON\n"); }
+statements:	statement SEMICOLON statements { }
+			| statement SEMICOLON { }
 			;
 
 statement:	var ASSIGN expression {
@@ -281,82 +281,82 @@ statement:	var ASSIGN expression {
 					else code << "[]= " << src1 << ", " << src2 ", " << "t" << size << endl;
 				}
 			}
-			| IF bool_exp THEN statements optionalelse ENDIF {printf("statement -> if bool_exp then statements optionalelse end_if\n"); }
-			| WHILE bool_exp BEGINLOOP statements ENDLOOP {printf("statement -> WHILE bool_exp BEGINLOOP statements ENDLOOP\n"); }
-			| DO BEGINLOOP statements ENDLOOP WHILE bool_exp {printf("statement -> do BEGINLOOP statements ENDLOOP WHILE bool_exp\n"); }
-			| READ vars {printf("statement -> READ vars\n"); }
-			| WRITE vars {printf("statement -> WRITE vars\n");}
-			| CONTINUE {printf("statement -> CONTINUE\n");}
-            | RETURN expression {printf("statement -> RETURN\n"); }
+			| IF bool_exp THEN statements optionalelse ENDIF { }
+			| WHILE bool_exp BEGINLOOP statements ENDLOOP { }
+			| DO BEGINLOOP statements ENDLOOP WHILE bool_exp { }
+			| READ vars { }
+			| WRITE vars {}
+			| CONTINUE {}
+            | RETURN expression { }
 			;
 			
-vars:		var COMMA vars {printf("vars -> var COMMA vars\n"); }
-			| var {printf("vars -> var\n");}
+vars:		var COMMA vars { }
+			| var {}
             ;
 optionalelse:
-			ELSE statements {printf("optionalelse -> else statements\n"); }
-			| {printf("optionalelse -> EMPTY\n"); }
+			ELSE statements { }
+			| { }
 			;
 bool_exp:
-			relation_and_exp relationexplist {printf("bool_exp -> relation_and_exp relationexplist\n"); }
+			relation_and_exp relationexplist { }
 			;
 relation_and_exp: 
-			relation_exp andlist { printf("relation_and_exp -> relation_exp andlist\n"); }
+			relation_exp andlist {  }
 			;
 relationexplist: 
-			OR relation_and_exp relationexplist{ printf("relationexplist -> or relation_and_exp relationexplist\n"); }
-			| {printf("relatoinexplist -> EMPTY\n"); }
+			OR relation_and_exp relationexplist{  }
+			| { }
 			;
 andlist:
-			AND relation_exp andlist {printf("andlist -> and relation_exp andlist\n"); }
-			| {printf("andlist -> EMPTY\n"); }
+			AND relation_exp andlist { }
+			| { }
 			;
 relation_exp:
-		    NOT	expression comp expression {printf("relational_exp -> NOT expression comp expression\n"); }
-			| NOT TRUE {printf("relational_exp -> NOT TRUE\n"); }
-			| NOT FALSE {printf("relational_exp -> NOT FALSE\n"); }
-			| NOT  L_PAREN bool_exp R_PAREN  {printf("relational_exp -> NOT L_PAREN bool_exp R_PAREN\n"); }
-			| expression comp expression {printf("relational_exp -> expression comp expression\n"); }
-			| TRUE {printf("relational_exp -> TRUE\n"); }
-			| FALSE {printf("relational_exp -> FALSE\n"); }
-			| L_PAREN bool_exp R_PAREN  {printf("relational_exp -> L_PAREN bool_exp R_PAREN\n"); }
+		    NOT	expression comp expression { }
+			| NOT TRUE { }
+			| NOT FALSE { }
+			| NOT  L_PAREN bool_exp R_PAREN  { }
+			| expression comp expression { }
+			| TRUE { }
+			| FALSE { }
+			| L_PAREN bool_exp R_PAREN  { }
 			;
 var:
-			IDENT { printf("var -> identifer\n"); }
-			| IDENT L_PAREN expression R_PAREN { printf("var -> IDENT L_PAREN expression R_PAREN\n"); }
+			IDENT {  }
+			| IDENT L_PAREN expression R_PAREN {  }
 			;
 expression:
-			multiplicative_exp exprlist { printf("expression -> multiplicative_exp exprlist\n"); }
+			multiplicative_exp exprlist {  }
 			;
 multiplicative_exp:
-			term terms {printf("multiplicative_exp -> term terms\n"); }
+			term terms { }
 			;
 term:
-			var {printf("term -> var\n"); }
-			| NUMBER {printf("term -> NUMBER\n"); }
-			| L_PAREN expression R_PAREN {printf("term -> L_PAREN expression R_PAREN\n"); }
-			| SUB var {printf("term -> SUB var\n"); }
-			| SUB NUMBER {printf("term -> SUB NUMBER\n"); }
-			| SUB L_PAREN expression R_PAREN {printf("term -> SUB L_PAREN expression R_PAREN\n"); } 
+			var { }
+			| NUMBER { }
+			| L_PAREN expression R_PAREN { }
+			| SUB var { }
+			| SUB NUMBER { }
+			| SUB L_PAREN expression R_PAREN { } 
 terms:
-			{printf("terms -> EMPTY\n");}
-			| terms MULT term {printf("terms -> terms MULT term\n"); }
-			| terms DIV term {printf("terms -> terms DIV term\n"); }
-			| terms MOD term {printf("terms -> terms MOD term\n"); }
+			{}
+			| terms MULT term { }
+			| terms DIV term { }
+			| terms MOD term { }
 			;
 exprlist:
-			ADD multiplicative_exp exprlist  {printf("exprlist -> ADD multiplicative_exp exprlist\n"); }
+			ADD multiplicative_exp exprlist  { }
 
-			| SUB multiplicative_exp exprlist {printf("exprlist -> SUB multiplicative_exp exprlist\n"); }
-			| {printf("exprlist -> EMPTY\n"); }
+			| SUB multiplicative_exp exprlist { }
+			| { }
 			;
 comp:
-			EQ {printf("comp -> EQ\n"); }
-			| NEQ {printf("comp -> NEQ\n"); }
-			| LT {printf("comp -> LT\n"); }
-			| GT {printf("comp -> GT\n"); }
-			| LTE {printf("comp -> LTE\n"); }
-			| GTE {printf("comp -> GTE\n"); }
+			EQ { }
+			| NEQ { }
+			| LT { }
+			| GT { }
+			| LTE { }
+			| GTE { }
 			;
 
 %%
