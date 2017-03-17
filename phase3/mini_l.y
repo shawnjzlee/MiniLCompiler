@@ -78,23 +78,36 @@
  	}
  };
  
+ struct status {
+ 	int label_sz;
+ 	string loop_label;
+ 	bool read;
+ 	bool write;
+ 	
+ 	status() {
+ 		label_sz = 0;
+ 		loop_label = "";
+ 		read = false;
+ 		write = false;
+ 	}
+ };
+ 
  // containers
  extern FILE * yyin;
  extern char * yytext;
  vector<symbol> symbol_table;
- vector<string> v_tmp_var;
- vector<string> v_pred_var;
- vector<string> v_identifiers;
- vector<string> v_leaders;
- vector<string> mil_code;
- vector<string> tmp_code;
+ vector<string> tmp;
+ vector<string> pred;
+ vector<string> identifiers;
+ vector<string> label;
+ vector<string> ending_label;
+ vector<string> loop;
  
  // variables
  extern int currLine;
  extern int currPos;
- int i_label, i_temp, i_pred, i_lead, i_bool_op = 0;
- string fn_name, tmp_name, tmp_var, file;
- bool r_flag, if_flag, error_flag, array_access_flag = false;
+ status global;
+ string fn_name, file;
  
  // ostringstream
  ostringstream code;
@@ -249,8 +262,8 @@ statement:	var ASSIGN expression {
 						string a = src2.substr(0, i2);
 						string b = src2.substr(i2 + 1);
 						
-						int size = v_tmp_var.size();
-						v_tmp_var.push_back("t" + size);
+						int size = tmp.size();
+						tmp.push_back("t" + size);
 						code << "=[] " << "t" << size << ", " << a << ", " << b << endl;
 						code << "[]= " << src1 << ", " << src2 ", " << "t" << size << endl;
 					}
@@ -259,12 +272,48 @@ statement:	var ASSIGN expression {
 			}
 			| IF bool_exp THEN statements optionalelse ENDIF { }
 			| WHILE {
+				label.push_back("L" + global.label_sz);
+				global.label_sz++;
 				
-			} bool_exp BEGINLOOP statements ENDLOOP { }
-			| DO BEGINLOOP statements ENDLOOP WHILE bool_exp { }
-			| READ vars { }
-			| WRITE vars {}
-			| CONTINUE {}
+				code << ": " << label[label.size() - 1] << endl;
+				
+				global.label_sz++;
+				ending_label.push_back("L" + global.label_sz);
+			} bool_exp BEGINLOOP statements {
+				code << ": " << ending_label[ending_label.size() - 1] << endl;
+				ending_label.pop_back();
+			} ENDLOOP {
+				code << ":= " << label[label.size() - 2] << endl;
+				code << ": " << label[label.size() - 1] << endl;
+				
+				label.pop_back();
+				label.pop_back();
+			}
+			| DO BEGINLOOP {
+				loop.push_back("L" + global.label_sz);
+				global.label_sz++;
+				
+				code << ": " << loop[loop.size() - 1] << endl;
+				
+				global.label_sz++;
+				ending_label.push_back("L" + global.label_sz);
+			} statements {
+				code << ": " << ending_label[ending_label.size() - 1] << endl;
+				ending_label.pop_back();
+			} ENDLOOP WHILE bool_exp {
+				int size = pred.size();
+				pred.push_back("p" + pred.size());
+				code << "== " << "p" << size << ", " << loop_label << ", 0" << endl;
+				code << "?:= " << loop[loop.size() - 1] << ", "
+				     << pred[pred.size() - 1] << endl;
+				code << ": " << label[label.size() - 1] << endl;
+				
+				label.pop_back();
+				loop.pop_back();
+			}
+			| READ { global.read = true; } vars { global.read = false; }
+			| WRITE { global.write = true; } vars { global.write = false; }
+			| CONTINUE { code << ":= " << ending_label[ending_label.size() - 1] << endl; }
             | RETURN expression { }
 			;
 			
