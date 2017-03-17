@@ -205,12 +205,26 @@ declarations:
 	        ;		
 
 declaration:
-			identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n"); }
+			identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
+				//printf("declaration -> identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER\n"); 
+			
+				if ($1 == fn_name || $1 == [=]() { for(auto &i : symbol_table) { if($1 == name) return true; }}) {
+					error << "Error line " << currLine << ": used variable \"" + $1 + "\" is already defined\n";
+				}
+				else {
+					symbol temp(1, atoi($5), $1);
+					symbol_table.push_back(temp);
+				}
+			}
 			| identifiers COLON INTEGER {
 				// printf("declaration -> identifiers COLON INTEGER\n"); 
 				
 				if ($1 == fn_name || $1 == [=]() { for(auto &i : symbol_table) { if($1 == name) return true; }}) {
-					error << "Error: " << currLine << ": variable already defined\n";
+					error << "Error line " << currLine << ": used variable \"" + $1 + "\" is already defined\n";
+				}
+				else {
+					symbol temp(0, 0, $1);
+					symbol_table.push_back(temp);
 				}
 			}
 
