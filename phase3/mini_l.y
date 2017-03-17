@@ -422,7 +422,41 @@ var:
 			}
 			;
 expression:
-			multiplicative_exp exprlist {  }
+			multiplicative_exp exprlist {  
+				if ($2 == NULL) $$ = $1;
+				else {
+					string src1 = $1, string src2 = $2;
+					
+					int size = tmp.size();
+					tmp.push_back("t" + size);
+					if (global.add) {
+						code << "+ " << "t" << size << ", " << src1 << ", " << src2 << endl;
+						
+						if(global.sub) {
+							int size2 = tmp.size();
+							tmp.push_back("t" + size2);
+							
+							code << "- " << "t" << size2 << ", " << "t" << size << ", " << expressions[expressions.size() - 1] << endl;
+							expressions.pop_back();
+						}
+					}
+					else if (globa.sub) {
+						int size = tmp.size();
+						code << "- " << "t" << size << ", " << src1 << ", " << src2 << endl;
+						
+						if(global.add) { 
+							int size2 = tmp.size();
+							tmp.push_back("t" + size2);
+							
+							code << "+ " << "t" << size2 << ", " << "t" << size << ", " << expressions[expressions.size() - 1] << endl;
+							expressions.pop_back();
+						}
+					}
+					strcpy($$, tmp[tmp.size() - 1].c_str());
+				}
+				global.add = false;
+				global.sub = false;
+			}
 			;
 multiplicative_exp:
 			term terms { }
