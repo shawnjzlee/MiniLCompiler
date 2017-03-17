@@ -84,6 +84,9 @@
  	bool write;
  	bool add;
  	bool sub;
+ 	bool mult;
+ 	bool divi;
+ 	bool mod;
  	
  	status() {
  		label_sz = 0;
@@ -92,6 +95,9 @@
  		write = false;
  		add = false;
  		sub = false;
+ 		mult = false;
+ 		divi = false;
+ 		mod = false;
  	}
  };
  
@@ -429,21 +435,30 @@ term:
 			| SUB NUMBER { }
 			| SUB L_PAREN expression R_PAREN { } 
 terms:
-			{}
-			| terms MULT term { }
-			| terms DIV term { }
-			| terms MOD term { }
+			{ $$ = ""; }
+			| terms MULT term { 
+				$$ = $3;
+				global.mult = true;
+			}
+			| terms DIV term { 
+				$$ = $3;
+				global.divi = true;
+			}
+			| terms MOD term { 
+				$$ = $3;
+				global.mod = true;
+			}
 			;
 exprlist:
 			ADD multiplicative_exp exprlist  { 
 				if ($3 != NULL) expressions.push_back($3);
-				add = true;
+				global.add = true;
 				$$ = $2
 			}
 
 			| SUB multiplicative_exp exprlist { 
 				if ($3 != NULL) expressions.push_back($3);
-				sub = true;
+				global.sub = true;
 				$$ = $2;
 			}
 			| { $$ = ""; }
