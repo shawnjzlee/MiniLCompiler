@@ -101,6 +101,7 @@
  vector<string> label;
  vector<string> ending_label;
  vector<string> loop;
+ vector<string> 
  
  // variables
  extern int currLine;
@@ -430,18 +431,20 @@ terms:
 			| terms MOD term { }
 			;
 exprlist:
-			ADD multiplicative_exp exprlist  { }
+			ADD multiplicative_exp exprlist  { 
+				if ($3 != NULL) 
+			}
 
 			| SUB multiplicative_exp exprlist { }
 			| { }
 			;
 comp:
-			EQ { $$ = "=="; }
-			| NEQ { $$ = "!="; }
-			| LT { $$ = "<"; }
-			| GT { $$ = ">"; }
-			| LTE { $$ = "<="; }
-			| GTE { $$ = ">="; }
+			EQ {  }
+			| NEQ {  }
+			| LT {  }
+			| GT {  }
+			| LTE {  }
+			| GTE {  }
 			;
 
 %%
