@@ -58,10 +58,6 @@
  
  // functions
  void yyerror(const char *msg);
- //bool check_duplicate(string name);
- //bool is_temp(string name);
- //int get_type(string name);
- //int get_index(string name);
  
  extern int yylex(void);
  
@@ -317,8 +313,60 @@ statement:	var ASSIGN expression {
             | RETURN expression { }
 			;
 			
-vars:		var COMMA vars { }
-			| var {}
+vars:		var COMMA vars {
+				vector<symbol>::iterator it;
+				symbol current_sym;
+				it = find(symbol_table.begin(), symbol_table.end(), $1);
+				if (it != symbol_table.end()) current_sym = *it;
+				
+				if (global.read) {
+					if (current_sym.type == 0) code << ".<" << current_sym.name << endl;
+					else {
+						int i = current_sym.name.find(" ");
+						string a = current_sym.name.substr(0, i);
+						string b = current_sym.name.substr(i + 1);
+						
+						code << ".[]< " << a << ", " << b << endl;
+					}
+				}
+				if (globa.write) {
+					if (current_sym.type == 0) code << ".> " << current_sym.name << endl;
+					else {
+						int i = current_sym.name.find(" ");
+						string a = current_sym.name.substr(0, i);
+						string b = current_sym.name.substr(i + 1);
+						
+						code << ".[]> " << a << ", " << b << endl;
+					}
+				}
+			}
+			| var {
+				vector<symbol>::iterator it;
+				symbol current_sym;
+				it = find(symbol_table.begin(), symbol_table.end(), $1);
+				if (it != symbol_table.end()) current_sym = *it;
+				
+				if (global.read) {
+					if (current_sym.type == 0) code << ".<" << current_sym.name << endl;
+					else {
+						int i = current_sym.name.find(" ");
+						string a = current_sym.name.substr(0, i);
+						string b = current_sym.name.substr(i + 1);
+						
+						code << ".[]< " << a << ", " << b << endl;
+					}
+				}
+				if (globa.write) {
+					if (current_sym.type == 0) code << ".> " << current_sym.name << endl;
+					else {
+						int i = current_sym.name.find(" ");
+						string a = current_sym.name.substr(0, i);
+						string b = current_sym.name.substr(i + 1);
+						
+						code << ".[]> " << a << ", " << b << endl;
+					}
+				}
+			}
             ;
 optionalelse:
 			ELSE statements { }
