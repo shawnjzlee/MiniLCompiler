@@ -227,51 +227,27 @@ statements:	statement SEMICOLON statements { }
 
 statement:	var ASSIGN expression {
 				// e.g.: =[] dst, src, index; []= dst, index, src
-				auto is_temp = [](string var)->string {
-					auto num = var.find_first_of("0123456789");
-					if ((var[0] == 't' && num == 1) || (var[0] == 'p' && num == 1) || val[0] == '_' || num == 0) {
-						var.insert(0, "_");
-						return var;
-					}
-					else return var;
-				}
-				
 				string var = $1;
 				int i1 = var.find(" ", 0);
 				if (i1 == string::npos) {
 					string expression = $3;
-					var = is_temp(var);
 					int i2 = expression.find(" ");
 					if (i2 != string::npos) {
 						string a = expression.substr(0, i2);
 						string b = expression.substr(i2 + 1);
-						
-						a = is_temp(a);
-						b = is_temp(b);
-						
 						code << "=[] " << var << ", " << a << ", " << b << endl;
 					}
-					else {
-						expression = is_temp(expression);
-						code << "= " << var << ", " << expression << endl;
-					}
-					
+					else code << "= " << var << ", " << expression << endl;
 				}
 				else {
 					string dst = var.substr(0, i1);
 					string src1 = var.substr(i1 + 1);
 					string src2 = $3;
 					
-					dst = is_temp(dst);
-					src1 = is_temp(src1);
-					src2 = is_temp(src2);
-					
 					int i2 = src2.find(" ");
 					if (i2 != string::npos) {
 						string a = src2.substr(0, i2);
 						string b = src2.substr(i2 + 1);
-						
-						b = is_temp(b);
 						
 						int size = v_tmp_var.size();
 						v_tmp_var.push_back("t" + size);
@@ -282,7 +258,9 @@ statement:	var ASSIGN expression {
 				}
 			}
 			| IF bool_exp THEN statements optionalelse ENDIF { }
-			| WHILE bool_exp BEGINLOOP statements ENDLOOP { }
+			| WHILE {
+				
+			} bool_exp BEGINLOOP statements ENDLOOP { }
 			| DO BEGINLOOP statements ENDLOOP WHILE bool_exp { }
 			| READ vars { }
 			| WRITE vars {}
