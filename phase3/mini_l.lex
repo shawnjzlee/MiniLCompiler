@@ -41,7 +41,7 @@ DIGIT       [0-9]
 
 %%
 
-"##".*          { column += yyleng; return PROGRAM}
+"##".*          { column += yyleng; }
 "function"      { column += yyleng; return FUNCTION; }
 "beginparams"   { column += yyleng; return BEGIN_PARAMS; }
 "endparams"     { column += yyleng; return END_PARAMS; }
