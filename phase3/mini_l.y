@@ -225,7 +225,7 @@ declaration:
 					error << "Error line " << currLine << ": used array / variable \"" << $1 << "\" is already defined\n";
 				}
 				else {
-					symbol temp(1, $6, $1);
+					symbol temp(1, atoi($6), $1);
 					symbol_table.push_back(temp);
 				}
 			}
@@ -283,9 +283,9 @@ statement:	var ASSIGN expression {
 						int size = tmp.size();
 						tmp.push_back("t" + size);
 						code << "=[] " << "t" << size << ", " << a << ", " << b << endl;
-						code << "[]= " << src1 << ", " << src2 << ", " << "t" << size << endl;
+						code << "[]= " << i1 << ", " << i2 << ", " << "t" << size << endl;
 					}
-					else code << "[]= " << src1 << ", " << src2 << ", " << "t" << size << endl;
+					else code << "[]= " << i1 << ", " << i2 << ", " << src2 << endl;
 				}
 			}
 			| IF bool_exp THEN statements {
