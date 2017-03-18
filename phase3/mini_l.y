@@ -199,24 +199,23 @@ functions:  function functions { }
 			| { } 
             ;
 
-function:	FUNCTION IDENT SEMICOLON params {} locals block END_BODY {
-				fn_name = $2;
-			} 
+function:	FUNCTION IDENT { fn_name = $2; } SEMICOLON params locals block {}
 			;
 
 params:     BEGIN_PARAMS declarations END_PARAMS { }
+			| BEGIN_PARAMS END_PARAMS { }
             ;
 
 locals:     BEGIN_LOCALS declarations END_LOCALS { }
             | BEGIN_LOCALS END_LOCALS { }
             ;
 
-block:		BEGIN_BODY declarations statements { }
+block:		BEGIN_BODY statements END_BODY { }
 			;
 
 declarations:
 			declaration SEMICOLON declarations{ }
-			| declaration SEMICOLON { }
+			| { }
 	        ;		
 
 declaration:
@@ -413,7 +412,7 @@ optionalelse:
 			;
 bool_exp:
 			relation_and_exp relationexplist { 
-				if ($2 == NULL) {
+				if ($2 == "") {
 					int size = pred.size();
 					pred.push_back("p" + size);
 					code << "== " << "p" << size << ", " << pred[pred.size() - 2] << ", 0" << endl;
@@ -462,7 +461,7 @@ bool_exp:
 			;
 relation_and_exp: 
 			relation_exp andlist {  
-				if ($2 == NULL) {
+				if ($2 == "") {
 					$$ = $1;
 				}
 				else {
@@ -485,17 +484,17 @@ relation_and_exp:
 relationexplist: 
 			OR relation_and_exp relationexplist{ 
 				$$ = $2;
-				if($3 != NULL) expressions.push_back($3);
+				if($3 != "") expressions.push_back($3);
 			}
 			| { 
-				$$ = NULL;
+				$$ = "";
 				global.or_exp = true;
 			}
 			;
 andlist:
 			AND relation_exp andlist {
 				$$ = $2;
-				if ($3 != NULL) { 
+				if ($3 != "") { 
 					expressions.push_back($3);					
 				}
 			}
@@ -571,7 +570,7 @@ var:
 			;
 expression:
 			multiplicative_exp exprlist {  
-				if ($2 == NULL) $$ = $1;
+				if ($2 == "") $$ = $1;
 				else {
 					string src1 = $1, src2 = $2;
 					
@@ -608,7 +607,7 @@ expression:
 			;
 multiplicative_exp:
 			term terms { 
-				if ($2 == NULL) $$ = $1;
+				if ($2 == "") $$ = $1;
 				else {
 					string src1 = $1, src2 = $2;
 					
@@ -660,13 +659,13 @@ terms:
 			;
 exprlist:
 			ADD multiplicative_exp exprlist  { 
-				if ($3 != NULL) expressions.push_back($3);
+				if ($3 != "") expressions.push_back($3);
 				global.add = true;
 				$$ = $2;
 			}
 
 			| SUB multiplicative_exp exprlist { 
-				if ($3 != NULL) expressions.push_back($3);
+				if ($3 != "") expressions.push_back($3);
 				global.sub = true;
 				$$ = $2;
 			}
