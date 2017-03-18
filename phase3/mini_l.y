@@ -184,6 +184,7 @@
 %type <identToken> terms
 %type <identToken> term
 %type <identToken> exprlist
+%type <numberToken> comp
 
 %nonassoc IF_PREC ELSE_PREC
 
@@ -666,6 +667,7 @@ exprlist:
 			}
 			| { $$ = ""; }
 			;
+			
 comp:		EQ { $$ = "=="; }
 			| NEQ { $$ = "!=";}
 			| LT { $$ = "<";}
