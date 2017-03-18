@@ -518,7 +518,7 @@ relation_exp:
 				int size = pred.size();
 				pred.push_back("p" + size);
 				
-				string src1 = $1, src2 = $3;
+				string src1 = $1, src2 = $2, src3 = $3;
 				
 				int i = src1.find(" ");
 				if (i != string::npos) {
@@ -529,9 +529,9 @@ relation_exp:
 					string b = src1.substr(i + 1);
 					
 					code << "=[] " << "t" << size2 << ", " << a << ", " << b << endl;
-					code << $2 << " " << "p" << size << ", " << "t" << size2 << ", " src2 << endl;
+					code << src2 << " " << "p" << size << ", " << "t" << size2 << ", " src3 << endl;
 				}
-				else code << $2 << " " << "p" << size << ", " << src1 << ", " << src2 << endl;
+				else code << src2 << " " << "p" << size << ", " << src1 << ", " << src3 << endl;
 				strcpy($$, "p" + size);
 			}
 			| TRUE { 
@@ -601,7 +601,29 @@ expression:
 			}
 			;
 multiplicative_exp:
-			term terms { }
+			term terms { 
+				if ($2 == NULL) $$ = $1;
+				else {
+					string src1 = $1, src2 = $2;
+					
+					int size = tmp.size();
+					tmp.push_back("t" + size);
+					
+					if (global.mult) {
+						code << "* " << "t" << size << ", " << src1 << ", " << src2 << endl;
+					}
+					else if (global.divi) {
+						code << "/ " << "t" << size << ", " << src1 << ", " << src2 << endl;
+					}
+					else if (global.mod) {
+						code << "% " << "t" << size << ", " << src1 << ", " << src2 << endl;
+					}
+					strcpy($$, tmp[tmp.size() - 1].c_str());
+				}
+				global.mult = false;
+				global.divi = false;
+				global.mod = false;
+			}
 			;
 term:
 			var { $$ = $1; }
@@ -644,13 +666,12 @@ exprlist:
 			}
 			| { $$ = ""; }
 			;
-comp:
-			EQ {  }
-			| NEQ {  }
-			| LT {  }
-			| GT {  }
-			| LTE {  }
-			| GTE {  }
+comp:		EQ { $$ = "=="; }
+			| NEQ { $$ = "!=";}
+			| LT { $$ = "<";}
+			| GT { $$ = ">"; }
+			| LTE { $$ = "<=";}
+			| GTE { $$ = ">=";}
 			;
 
 %%
