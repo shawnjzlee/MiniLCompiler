@@ -238,6 +238,7 @@ declaration:
 					symbol_table.push_back(temp);
 				}
 			}
+			;
 
 identifiers:
 			COMMA IDENT identifiers {
