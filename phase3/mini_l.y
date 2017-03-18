@@ -196,7 +196,7 @@ functions:  function functions { }
 			| { } 
             ;
 
-function:	function IDENT SEMICOLON params locals block END_BODY {
+function:	FUNCTION IDENT SEMICOLON params {} locals block END_BODY {
 				fn_name = $2;
 			} 
 			;
@@ -347,7 +347,7 @@ statement:	var ASSIGN expression {
 			;
 			
 vars:		var COMMA vars {
-				index = get_index_by_name($1);
+				int index = get_index_by_name($1);
 				symbol current_sym;
 				if (index != -1) current_sym = symbol_table.at(index); 
 				
@@ -361,7 +361,7 @@ vars:		var COMMA vars {
 						code << ".[]< " << a << ", " << b << endl;
 					}
 				}
-				if (globa.write) {
+				if (global.write) {
 					if (current_sym.type == 0) code << ".> " << current_sym.name << endl;
 					else {
 						int i = current_sym.name.find(" ");
@@ -373,7 +373,7 @@ vars:		var COMMA vars {
 				}
 			}
 			| var {
-				index = get_index_by_name($1);
+				int index = get_index_by_name($1);
 				symbol current_sym;
 				if (index != -1) current_sym = symbol_table.at(index); 
 				
@@ -387,7 +387,7 @@ vars:		var COMMA vars {
 						code << ".[]< " << a << ", " << b << endl;
 					}
 				}
-				if (globa.write) {
+				if (global.write) {
 					if (current_sym.type == 0) code << ".> " << current_sym.name << endl;
 					else {
 						int i = current_sym.name.find(" ");
@@ -657,7 +657,7 @@ exprlist:
 			ADD multiplicative_exp exprlist  { 
 				if ($3 != NULL) expressions.push_back($3);
 				global.add = true;
-				$$ = $2
+				$$ = $2;
 			}
 
 			| SUB multiplicative_exp exprlist { 
