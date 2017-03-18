@@ -710,7 +710,27 @@ int main(int argc, char **argv){
 		return 0;
 	}
 	
-
+	ostringstream output;
+	
+	output << "func " << fn_name << endl;
+	
+	for(auto &i : symbol_table) {
+		if(i.type == 0) output << ". " << i.name << endl;
+		else output << ".[]" << i.name <<  ", " << i.arr_size << endl;
+	}
+	for(auto &i : tmp) {
+		output << ". " << i << endl;
+	}
+	for(auto &i : pred) {
+		output << ". " << i << endl;
+	}
+	
+	output << code.str() << endl;
+	
+	fn_name = fn_name + ".mil";
+	ofstream file_gen(fn_name.c_str());
+	file_gen << output.str();
+	file_gen.close();
 	
 	return 0;
 }
