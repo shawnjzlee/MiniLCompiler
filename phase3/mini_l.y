@@ -464,8 +464,13 @@ relationexplist:
 			| { }
 			;
 andlist:
-			AND relation_exp andlist { }
-			| { }
+			AND relation_exp andlist {
+				$$ = $2;
+				if ($3 != NULL) { 
+					expressions.push_back($3);					
+				}
+			}
+			| { $$ = ""; }
 			;
 relation_exp:
 		    NOT	expression comp expression { }
