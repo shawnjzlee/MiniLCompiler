@@ -196,10 +196,13 @@ program:    functions { }
             ;
 
 functions:  function functions { }
-			| { } 
+			| function { } 
             ;
 
-function:	FUNCTION IDENT { fn_name = $2; } SEMICOLON params locals block {}
+function:	FUNCTION IDENT { 
+                fn_name = $2; 
+            } SEMICOLON params locals block
+            
 			;
 
 params:     BEGIN_PARAMS declarations END_PARAMS { }
@@ -215,7 +218,7 @@ block:		BEGIN_BODY statements END_BODY { }
 
 declarations:
 			declaration SEMICOLON declarations{ }
-			| { }
+			| declaration SEMICOLON{ }
 	        ;		
 
 declaration:
@@ -293,9 +296,9 @@ statement:	var ASSIGN expression {
 				code << ":= " << "L" << global.label_sz << endl;
 				global.label_sz++;
 			} optionalelse ENDIF { 
-				if (else_label[else_label.size() - 1] == false)
-					code << ": " << label[label.size() - 2] << endl;
-				code << ": " << label[label.size() - 1] << endl;
+				if (else_label.at(else_label.size() - 1) == false)
+					code << ": " << label.at(label.size() - 2) << endl;
+				code << ": " << label.at(label.size() - 1) << endl;
 				
 				label.pop_back();
 				label.pop_back();
@@ -307,16 +310,16 @@ statement:	var ASSIGN expression {
 				label.push_back("L" + global.label_sz);
 				global.label_sz++;
 				
-				code << ": " << label[label.size() - 1] << endl;
+				code << ": " << label.at(label.size() - 1) << endl;
 				
 				global.label_sz++;
 				ending_label.push_back("L" + global.label_sz);
 			} bool_exp BEGINLOOP statements {
-				code << ": " << ending_label[ending_label.size() - 1] << endl;
+				code << ": " << ending_label.at(ending_label.size() - 1) << endl;
 				ending_label.pop_back();
 			} ENDLOOP {
-				code << ":= " << label[label.size() - 2] << endl;
-				code << ": " << label[label.size() - 1] << endl;
+				code << ":= " << label.at(label.size() - 2) << endl;
+				code << ": " << label.at(label.size() - 1) << endl;
 				
 				label.pop_back();
 				label.pop_back();
@@ -325,27 +328,27 @@ statement:	var ASSIGN expression {
 				loop.push_back("L" + global.label_sz);
 				global.label_sz++;
 				
-				code << ": " << loop[loop.size() - 1] << endl;
+				code << ": " << loop.at(loop.size() - 1) << endl;
 				
 				global.label_sz++;
 				ending_label.push_back("L" + global.label_sz);
 			} statements {
-				code << ": " << ending_label[ending_label.size() - 1] << endl;
+				code << ": " << ending_label.at(ending_label.size() - 1) << endl;
 				ending_label.pop_back();
 			} ENDLOOP WHILE bool_exp {
 				int size = pred.size();
 				pred.push_back("p" + pred.size());
 				code << "== " << "p" << size << ", " << do_loop << ", 0" << endl;
-				code << "?:= " << loop[loop.size() - 1] << ", "
-				     << pred[pred.size() - 1] << endl;
-				code << ": " << label[label.size() - 1] << endl;
+				code << "?:= " << loop.at(loop.size() - 1) << ", "
+				     << pred.at(pred.size() - 1) << endl;
+				code << ": " << label.at(label.size() - 1) << endl;
 				
 				label.pop_back();
 				loop.pop_back();
 			}
 			| READ { global.read = true; } vars { global.read = false; }
 			| WRITE { global.write = true; } vars { global.write = false; }
-			| CONTINUE { code << ":= " << ending_label[ending_label.size() - 1] << endl; }
+			| CONTINUE { code << ":= " << ending_label.at(ending_label.size() - 1) << endl; }
             | RETURN expression { }
 			;
 			
@@ -404,10 +407,10 @@ vars:		var COMMA vars {
             ;
 optionalelse:
 			ELSE { 
-				code << ": " << optional_else[optional_else.size() - 1] << endl;
+				code << ": " << optional_else.at(optional_else.size() - 1) << endl;
 				else_label.push_back(true);
 			} statements { 
-				code << ": " << label[label.size() - 1] << endl;
+				code << ": " << label.at(label.size() - 1) << endl;
 			}
 			| { else_label.push_back(false); }
 			;
@@ -416,7 +419,7 @@ bool_exp:
 				if ($2 == "") {
 					int size = pred.size();
 					pred.push_back("p" + size);
-					code << "== " << "p" << size << ", " << pred[pred.size() - 2] << ", 0" << endl;
+					code << "== " << "p" << size << ", " << pred.at(pred.size() - 2) << ", 0" << endl;
 					
 					label.push_back("L" + global.label_sz);
 					optional_else.push_back("L" + global.label_sz);
@@ -439,16 +442,16 @@ bool_exp:
 						int size2 = pred.size();
 						pred.push_back("p" + size2);
 						
-						code << "|| " << "p" << size2 << ", " << pred[pred.size() - 1] << ", " << expressions[expressions.size() - 1] << endl;
+						code << "|| " << "p" << size2 << ", " << pred.at(pred.size() - 1) << ", " << expressions.at(expressions.size() - 1) << endl;
 						expressions.pop_back();
 					}
 					
-					strcpy($$, pred[pred.size() - 1].c_str());
+					strcpy($$, pred.at(pred.size() - 1).c_str());
 					if (global.or_exp) {
 						int size2 = pred.size();
 						pred.push_back("p" + size2);
 						
-						code << "== " << "p" << size2 << ", " << pred[pred.size() - 2] << ", 0" << endl;
+						code << "== " << "p" << size2 << ", " << pred.at(pred.size() - 2) << ", 0" << endl;
 						
 						label.push_back("L" + global.label_sz);
 						code << "?:= " << "L" << global.label_sz << ", " << "p" << size2 << endl;
@@ -475,10 +478,10 @@ relation_and_exp:
 					while (expressions.size() > 0) {
 						int size2 = pred.size();
 						pred.push_back("p" + size2);
-						code << "&&" << "p" << size2 << ", " << pred[pred.size() - 2] << ", " << expressions[expressions.size() - 1] << endl;
+						code << "&&" << "p" << size2 << ", " << pred.at(pred.size() - 2) << ", " << expressions.at(expressions.size() - 1) << endl;
 						expressions.pop_back();
 					}
-					strcpy($$, pred[pred.size() - 1].c_str());
+					strcpy($$, pred.at(pred.size() - 1).c_str());
 				}
 			}
 			;
@@ -488,7 +491,12 @@ relationexplist:
 				if($3 != "") expressions.push_back($3);
 			}
 			| { 
-				$$ = "";
+				string s = "";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp; 
+                
+				
 				global.or_exp = true;
 			}
 			;
@@ -499,7 +507,10 @@ andlist:
 					expressions.push_back($3);					
 				}
 			}
-			| { $$ = ""; }
+			| { string s = "";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp;  }
 			;
 relation_exp:
 		    NOT expression comp expression { }
@@ -584,7 +595,7 @@ expression:
 							int size2 = tmp.size();
 							tmp.push_back("t" + size2);
 							
-							code << "- " << "t" << size2 << ", " << "t" << size << ", " << expressions[expressions.size() - 1] << endl;
+							code << "- " << "t" << size2 << ", " << "t" << size << ", " << expressions.at(expressions.size() - 1) << endl;
 							expressions.pop_back();
 						}
 					}
@@ -596,11 +607,11 @@ expression:
 							int size2 = tmp.size();
 							tmp.push_back("t" + size2);
 							
-							code << "+ " << "t" << size2 << ", " << "t" << size << ", " << expressions[expressions.size() - 1] << endl;
+							code << "+ " << "t" << size2 << ", " << "t" << size << ", " << expressions.at(expressions.size() - 1) << endl;
 							expressions.pop_back();
 						}
 					}
-					strcpy($$, tmp[tmp.size() - 1].c_str());
+					strcpy($$, tmp.at(tmp.size() - 1).c_str());
 				}
 				global.add = false;
 				global.sub = false;
@@ -624,7 +635,7 @@ multiplicative_exp:
 					else if (global.mod) {
 						code << "% " << "t" << size << ", " << src1 << ", " << src2 << endl;
 					}
-					strcpy($$, tmp[tmp.size() - 1].c_str());
+					strcpy($$, tmp.at(tmp.size() - 1).c_str());
 				}
 				global.mult = false;
 				global.divi = false;
@@ -644,7 +655,11 @@ term:
 			| SUB NUMBER { }
 			| SUB L_PAREN expression R_PAREN { } 
 terms:
-			{ $$ = ""; }
+			{
+			    string s = "";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp;  }
 			| terms MULT term { 
 				$$ = $3;
 				global.mult = true;
@@ -670,15 +685,49 @@ exprlist:
 				global.sub = true;
 				$$ = $2;
 			}
-			| { $$ = ""; }
+			| {
+			    string s = "";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp;  }
 			;
 			
-comp:		EQ { $$ = "=="; }
-			| NEQ { $$ = "!=";}
-			| LT { $$ = "<";}
-			| GT { $$ = ">"; }
-			| LTE { $$ = "<=";}
-			| GTE { $$ = ">=";}
+comp:		EQ {
+                string s = "==";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp; 
+                }
+			| NEQ {
+			    string s = "!=";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp; 
+                }
+			| LT {
+			    string s = "<";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp; 
+                }
+			| GT { 
+			    string s = ">";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp; 
+                }
+			| LTE {
+			    string s = "<=";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp; 
+                }
+			| GTE {
+			    string s = ">=";
+                char * temp; 
+                strcpy(temp, s.c_str()); 
+                $$ = temp; 
+                }
 			;
 
 %%
