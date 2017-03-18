@@ -184,7 +184,7 @@
 %type <identToken> terms
 %type <identToken> term
 %type <identToken> exprlist
-%type <numberToken> comp
+%type <identToken> comp
 
 %nonassoc IF_PREC ELSE_PREC
 
