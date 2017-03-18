@@ -498,13 +498,56 @@ andlist:
 			| { $$ = ""; }
 			;
 relation_exp:
-		    NOT	expression comp expression { }
-			| NOT TRUE { }
-			| NOT FALSE { }
-			| NOT  L_PAREN bool_exp R_PAREN  { }
-			| expression comp expression { }
-			| TRUE { }
-			| FALSE { }
+		    NOT expression comp expression { }
+			| NOT TRUE {
+				int size = pred.size();
+				pred.push_back("p" + size);
+				
+				code << "= " << "p" << size << ", 0" << endl;
+				strcpy($$, "p" + size);
+			}
+			| NOT FALSE { 
+				int size = pred.size();
+				pred.push_back("p" + size);
+				
+				code << "= " << "p" << size << ", 1" << endl;
+				strcpy($$, "p" + size);
+			}
+			| NOT L_PAREN bool_exp R_PAREN  { }
+			| expression comp expression { 
+				int size = pred.size();
+				pred.push_back("p" + size);
+				
+				string src1 = $1, src2 = $3;
+				
+				int i = src1.find(" ");
+				if (i != string::npos) {
+					int size2 = tmp.size();
+					tmp.push_back("t" + size2);
+					
+					string a = src1.substr(0, i);
+					string b = src1.substr(i + 1);
+					
+					code << "=[] " << "t" << size2 << ", " << a << ", " << b << endl;
+					code << $2 << " " << "p" << size << ", " << "t" << size2 << ", " src2 << endl;
+				}
+				else code << $2 << " " << "p" << size << ", " << src1 << ", " << src2 << endl;
+				strcpy($$, "p" + size);
+			}
+			| TRUE { 
+				int size = pred.size();
+				pred.push_back("p" + size);
+				
+				code << "= " << "p" << size << ", 1" << endl;
+				strcpy($$, "p" + size);
+			}
+			| FALSE {
+				int size = pred.size();
+				pred.push_back("p" + size);
+				
+				code << "= " << "p" << size << ", 0" << endl;
+				strcpy($$, "p" + size);
+			}
 			| L_PAREN bool_exp R_PAREN  { }
 			;
 var:
