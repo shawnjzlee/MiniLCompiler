@@ -633,12 +633,7 @@ multiplicative_exp:
 			;
 term:
 			var { $$ = $1; }
-			| NUMBER { 
-			    string tempstring = to_string($1);
-			    char *tempchar;
-			    strcpy(tempchar, tempstring.c_str() );
-			    $$ = tempchar;
-			    }
+			| NUMBER { $$ = $1; }
 			| L_PAREN expression R_PAREN { $$ = $2; }
 			| SUB var { 
 				string temp = $2;
