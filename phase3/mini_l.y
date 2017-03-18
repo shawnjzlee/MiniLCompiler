@@ -87,6 +87,7 @@
  	bool mult;
  	bool divi;
  	bool mod;
+ 	bool or_exp;
  	
  	status() {
  		label_sz = 0;
@@ -98,6 +99,7 @@
  		mult = false;
  		divi = false;
  		mod = false;
+ 		or_exp = false;
  	}
  };
  
@@ -112,12 +114,14 @@
  vector<string> ending_label;
  vector<string> loop;
  vector<string> expressions;
+ vector<string> optional_else;
+ vector<bool> else_label;
  
  // variables
  extern int currLine;
  extern int currPos;
  status global;
- string fn_name, file;
+ string fn_name, do_loop;
  
  // ostringstream
  ostringstream code;
@@ -280,7 +284,21 @@ statement:	var ASSIGN expression {
 					else code << "[]= " << src1 << ", " << src2 ", " << "t" << size << endl;
 				}
 			}
-			| IF bool_exp THEN statements optionalelse ENDIF { }
+			| IF bool_exp THEN statements {
+				label.push_back("L" + global.label_sz);
+				code << ":= " << "L" << global.label_sz << endl;
+				global.label_sz++;
+			} optionalelse ENDIF { 
+				if (else_label[else_label.size() - 1] == false)
+					code << ": " << label[label.size() - 2] << endl;
+				code << ": " << label[label.size() - 1] << endl;
+				
+				label.pop_back();
+				label.pop_back();
+				
+				optional_else.pop_back();
+				else_label.pop_back();
+			}
 			| WHILE {
 				label.push_back("L" + global.label_sz);
 				global.label_sz++;
@@ -381,11 +399,62 @@ vars:		var COMMA vars {
 			}
             ;
 optionalelse:
-			ELSE statements { }
-			| { }
+			ELSE { 
+				code << ": " << optional_else[optional_else.size() - 1] << endl;
+				else_label.push_back(true);
+			} statements { 
+				code << ": " << label[label.size() - 1] << endl;
+			}
+			| { else_label.push_back(false); }
 			;
 bool_exp:
-			relation_and_exp relationexplist { }
+			relation_and_exp relationexplist { 
+				if ($2 == NULL) {
+					int size = pred.size();
+					pred.push_back("p" + size);
+					code << "== " << "p" << size << ", " << pred[pred.size() - 2] << ", 0" << endl;
+					
+					label.push_back("L" + global.label_sz);
+					optional_else.push_back("L" + global.label_sz);
+					
+					code << "?:= " << "L" << global.label_sz << ", " << "p" << size << endl;
+					global.label_sz++;
+					
+					$$ = $1;
+					
+					do_loop = "p" + size;
+				}
+				else {
+					int size = pred.size();
+					pred.push_back("p" + size);
+					
+					string src1 = $1, string src2 = $2;
+					code << "|| " << "p" << size << ", " << src1 << ", " << src2 << endl;
+					
+					while (expressions.size() > 0) {
+						int size2 = pred.size();
+						pred.push_back("p" + size2);
+						
+						code << "|| " << "p" << size2 << ", " << pred[pred.size() - 1] << ", " << expressions[expressions.size() - 1] << endl;
+						expressions.pop_back();
+					}
+					
+					strcpy($$, pred[pred.size() - 1].c_str());
+					if (global.or_exp) {
+						int size2 = pred.size();
+						pred.push_back("p" + size2);
+						
+						code << "== " << "p" << size2 <<< ", " << pred[pred.size() - 2] << ", 0" << endl;
+						
+						label.push_back("L" + global.label_sz);
+						code << "?:= " << "L" << global.label_sz << ", " << "p" << size2 << endl;
+						global.label_sz++;
+						
+						global.or_exp = false;
+						do_loop = "p" + size2;
+					}
+				}
+			}
 			;
 relation_and_exp: 
 			relation_exp andlist {  }
