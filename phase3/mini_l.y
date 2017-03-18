@@ -45,7 +45,8 @@
  // includes
  #include <stdlib.h>
  #include <stdio.h>
-
+ #include <string.h>
+ 
  #include <iostream>
  #include <fstream>
  #include <sstream>
@@ -54,7 +55,6 @@
  #include <list>
  #include <string>
  #include <algorithm>
- #include <cstring>
  
  using namespace std;
  
@@ -222,7 +222,7 @@ declarations:
 declaration:
 			IDENT identifiers COLON ARRAY L_SQUARE_BRACKET NUMBER R_SQUARE_BRACKET OF INTEGER {
 				if (is_duplicate($1)) {
-					error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
+					error << "Error line " << currLine << ": used array / variable \"" << $1 << "\" is already defined\n";
 				}
 				else {
 					symbol temp(1, $6, $1);
@@ -231,7 +231,7 @@ declaration:
 			}
 			| IDENT identifiers COLON INTEGER {
 				if (is_duplicate($1)) {
-					error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
+					error << "Error line " << currLine << ": used array / variable \"" << $1 << "\" is already defined\n";
 				}
 				else {
 					symbol temp(0, 0, $1);
@@ -242,7 +242,7 @@ declaration:
 identifiers:
 			COMMA IDENT identifiers {
 				if (is_duplicate($2)) {
-					error << "Error line " << currLine << ": used array / variable \"" + $2 + "\" is already defined\n";
+					error << "Error line " << currLine << ": used array / variable \"" << $2 << "\" is already defined\n";
 				}
 				else {
 					symbol temp(0, 0, $2);
@@ -432,7 +432,7 @@ bool_exp:
 					int size = pred.size();
 					pred.push_back("p" + size);
 					
-					string src1 = $1, string src2 = $2;
+					string src1 = $1, src2 = $2;
 					code << "|| " << "p" << size << ", " << src1 << ", " << src2 << endl;
 					
 					while (expressions.size() > 0) {
@@ -448,7 +448,7 @@ bool_exp:
 						int size2 = pred.size();
 						pred.push_back("p" + size2);
 						
-						code << "== " << "p" << size2 <<< ", " << pred[pred.size() - 2] << ", 0" << endl;
+						code << "== " << "p" << size2 << ", " << pred[pred.size() - 2] << ", 0" << endl;
 						
 						label.push_back("L" + global.label_sz);
 						code << "?:= " << "L" << global.label_sz << ", " << "p" << size2 << endl;
@@ -533,7 +533,7 @@ relation_exp:
 					string b = src1.substr(i + 1);
 					
 					code << "=[] " << "t" << size2 << ", " << a << ", " << b << endl;
-					code << src2 << " " << "p" << size << ", " << "t" << size2 << ", " src3 << endl;
+					code << src2 << " " << "p" << size << ", " << "t" << size2 << ", " << src3 << endl;
 				}
 				else code << src2 << " " << "p" << size << ", " << src1 << ", " << src3 << endl;
 				strcpy($$, "p" + size);
@@ -557,17 +557,16 @@ relation_exp:
 var:
 			IDENT { 
 				if(is_duplicate($1)) $$ = $1;
-				else error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
+				else error << "Error line " << currLine << ": used array / variable \"" << $1 << "\" is already defined\n";
 			}
 			| IDENT L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
-				if((is_duplicate($1)) && symbol_table.at(get_index_by_name($1)).type != 1) {
-					string temp;
-					temp.append($1);
-					temp.append(" ");
-					temp.append($3);
+				if( is_duplicate($1) && symbol_table.at(get_index_by_name($1)).type != 1 ) {
+				    string temp1 = $1;
+				    string temp3 = $3;
+					string temp = temp1 + " " + temp3;
 					strcpy($$, temp.c_str());
 				}
-				else error << "Error line " << currLine << ": used array / variable \"" + get_string($1) + "\" is already defined\n";
+				else error << "Error line " << currLine << ": used array / variable \"" << $1 << "\" is already defined\n";
 			}
 			;
 expression:
