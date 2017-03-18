@@ -637,7 +637,7 @@ term:
 			    string tempstring = to_string($1);
 			    char *tempchar;
 			    strcpy(tempchar, tempstring.c_str() );
-			    $$ = tempchar; }
+			    $$ = tempchar;
 			    }
 			| L_PAREN expression R_PAREN { $$ = $2; }
 			| SUB var { 
