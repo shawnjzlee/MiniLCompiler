@@ -479,8 +479,14 @@ relation_and_exp:
 			}
 			;
 relationexplist: 
-			OR relation_and_exp relationexplist{  }
-			| { }
+			OR relation_and_exp relationexplist{ 
+				$$ = $2;
+				if($3 != NULL) expressions.push_back($3);
+			}
+			| { 
+				$$ = NULL;
+				global.or_exp = true;
+			}
 			;
 andlist:
 			AND relation_exp andlist {
