@@ -93,7 +93,6 @@ DIGIT       [0-9]
 ":="            { column += yyleng; return ASSIGN; }
 
 [ \t]+          { column += yyleng; }
-"##".*          { column = 1; }
 \n              { line++;   column = 1; }
 
 {DIGIT}+        { column += yyleng; return NUMBER; }
