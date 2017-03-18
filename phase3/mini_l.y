@@ -54,6 +54,7 @@
  #include <list>
  #include <string>
  #include <algorithm>
+ #include <cstring>
  
  using namespace std;
  
@@ -280,9 +281,9 @@ statement:	var ASSIGN expression {
 						int size = tmp.size();
 						tmp.push_back("t" + size);
 						code << "=[] " << "t" << size << ", " << a << ", " << b << endl;
-						code << "[]= " << src1 << ", " << src2 ", " << "t" << size << endl;
+						code << "[]= " << src1 << ", " << src2 << ", " << "t" << size << endl;
 					}
-					else code << "[]= " << src1 << ", " << src2 ", " << "t" << size << endl;
+					else code << "[]= " << src1 << ", " << src2 << ", " << "t" << size << endl;
 				}
 			}
 			| IF bool_exp THEN statements {
@@ -568,7 +569,7 @@ expression:
 			multiplicative_exp exprlist {  
 				if ($2 == NULL) $$ = $1;
 				else {
-					string src1 = $1, string src2 = $2;
+					string src1 = $1, src2 = $2;
 					
 					int size = tmp.size();
 					tmp.push_back("t" + size);
@@ -583,7 +584,7 @@ expression:
 							expressions.pop_back();
 						}
 					}
-					else if (globa.sub) {
+					else if (global.sub) {
 						int size = tmp.size();
 						code << "- " << "t" << size << ", " << src1 << ", " << src2 << endl;
 						
