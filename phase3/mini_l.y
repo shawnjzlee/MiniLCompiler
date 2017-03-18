@@ -62,6 +62,7 @@
  void yyerror(const char *msg);
  bool is_duplicate(const string var);
  int get_index_by_name(const string var);
+ string get_string(const char *var);
  
  extern int yylex(void);
  
@@ -134,6 +135,7 @@
 
   char* identToken;
   int numberToken;
+  char* commentToken;
    
 }
 
@@ -156,7 +158,7 @@
 %token NOT TRUE FALSE
 %token SEMICOLON COLON COMMA L_PAREN R_PAREN L_SQUARE_BRACKET R_SQUARE_BRACKET ASSIGN
 %token <identToken> IDENT 
-%token <numberToken> NUMBER
+%token <identToken> NUMBER
 %token <commentToken> COMMENT
 
 %left OR AND SUB ADD MULT DIV MOD EQ NEQ LT GT LTE GTE
@@ -223,7 +225,7 @@ declaration:
 					error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
 				}
 				else {
-					symbol temp(1, atoi($6), $1);
+					symbol temp(1, $6, $1);
 					symbol_table.push_back(temp);
 				}
 			}
@@ -333,7 +335,7 @@ statement:	var ASSIGN expression {
 			} ENDLOOP WHILE bool_exp {
 				int size = pred.size();
 				pred.push_back("p" + pred.size());
-				code << "== " << "p" << size << ", " << loop_label << ", 0" << endl;
+				code << "== " << "p" << size << ", " << do_loop << ", 0" << endl;
 				code << "?:= " << loop[loop.size() - 1] << ", "
 				     << pred[pred.size() - 1] << endl;
 				code << ": " << label[label.size() - 1] << endl;
@@ -558,11 +560,14 @@ var:
 				else error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
 			}
 			| IDENT L_SQUARE_BRACKET expression R_SQUARE_BRACKET {
-				if(is_duplicate($1) && symbol_table.at(get_index_by_name($1)).type != 1)) {
-					string temp = $1 + " " + $3;
+				if((is_duplicate($1)) && symbol_table.at(get_index_by_name($1)).type != 1) {
+					string temp;
+					temp.append($1);
+					temp.append(" ");
+					temp.append($3);
 					strcpy($$, temp.c_str());
 				}
-				else error << "Error line " << currLine << ": used array / variable \"" + $1 + "\" is already defined\n";
+				else error << "Error line " << currLine << ": used array / variable \"" + get_string($1) + "\" is already defined\n";
 			}
 			;
 expression:
@@ -690,6 +695,11 @@ int get_index_by_name(const string var) {
         [&](symbol const& i) { return i.name == var; });
     if (it != symbol_table.end()) return it - symbol_table.begin();
     else return -1;
+}
+
+string get_string(const char * var) {
+	string _string(var);
+	return _string;
 }
 
 int main(int argc, char **argv){
