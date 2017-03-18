@@ -33,7 +33,7 @@
 %{
     #include "y.tab.h"
     #include <string.h>
-    int line = 1, column = 1;
+    int currLine = 1, column = 1;
 %}
 
 ALPHA       [a-zA-Z]
@@ -93,18 +93,18 @@ DIGIT       [0-9]
 ":="            { column += yyleng; return ASSIGN; }
 
 [ \t]+          { column += yyleng; }
-\n              { line++;   column = 1; }
+\n              { currLine++;   column = 1; }
 
 {DIGIT}+        { column += yyleng; return NUMBER; }
 
 {ALPHA}+(_*({ALPHA}|{DIGIT})+)* { column += yyleng; return IDENT; }
 
-(([0-9]|\_)([[:alnum:]]|\_)*)|(([[:alnum:]]|\_)*\_) { printf("Error at line %d, column %d, yytext: %s: invalid identifier.\n", line, column, yytext); exit(0); }
+(([0-9]|\_)([[:alnum:]]|\_)*)|(([[:alnum:]]|\_)*\_) { printf("Error at currLine %d, column %d, yytext: %s: invalid identifier.\n", currLine, column, yytext); exit(0); }
 
-{DIGIT}+{ALPHA}+ { printf("Error at line %d, column %d, yytext: %s: identifier must start with a letter.\n", line, column, yytext); exit(0); }
+{DIGIT}+{ALPHA}+ { printf("Error at currLine %d, column %d, yytext: %s: identifier must start with a letter.\n", currLine, column, yytext); exit(0); }
 
-"_"({DIGIT}|{ALPHA})+ { printf("Error at line %d, colum %d, yytext: %s: identifier must start with a letter.\n", line, column, yytext); exit(0); }
+"_"({DIGIT}|{ALPHA})+ { printf("Error at currLine %d, colum %d, yytext: %s: identifier must start with a letter.\n", currLine, column, yytext); exit(0); }
 
-.               { printf(" Error at line %d, column %d: unrecognized symbol \"%s\"\n", line, column, yytext); exit(0); }
+.               { printf(" Error at currLine %d, column %d: unrecognized symbol \"%s\"\n", currLine, column, yytext); exit(0); }
 
 %%
