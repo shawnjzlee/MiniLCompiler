@@ -457,7 +457,26 @@ bool_exp:
 			}
 			;
 relation_and_exp: 
-			relation_exp andlist {  }
+			relation_exp andlist {  
+				if ($2 == NULL) {
+					$$ = $1;
+				}
+				else {
+					int size = pred.size();
+					pred.push_back("p" + size);
+					
+					string src1 = $1, src2 = $2;
+					code << "&& " << "p" << size << ", " << src1 << ", " << src2 << endl;
+					
+					while (expressions.size() > 0) {
+						int size2 = pred.size();
+						pred.push_back("p" + size2);
+						code << "&&" << "p" << size2 << ", " << pred[pred.size() - 2] << ", " << expressions[expressions.size() - 1] << endl;
+						expressions.pop_back();
+					}
+					strcpy($$, pred[pred.size() - 1].c_str());
+				}
+			}
 			;
 relationexplist: 
 			OR relation_and_exp relationexplist{  }
